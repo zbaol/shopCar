@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>购物车</title>
+	<style type="text/css">
+		*{padding: 0;margin: 0;list-style: none;}
+		.cart{width: 990px;margin:50px auto;}
+		button:focus,input:focus{outline: none;}
+		.cart_hd{height: 40px;background: #f3f3f3;border: 1px solid #ddd;line-height: 40px;font-size: 14px; color:#666;}
+		.cart_hd .hd1{float: left;padding-left: 15px;width: 100px;}
+		.cart_hd .hd1 .all_check{position: relative;top: 2px;margin-right: 5px;}
+		.cart_hd .hd2{float: left;padding-left: 15px;width: 338px;}
+		.cart_hd .hd3{float: left;padding-left: 15px;width: 150px;}
+		.cart_hd .hd4{float: left;padding-left: 15px;width: 80px;}
+		.cart_hd .hd5{float: left;padding-left: 15px;width: 130px;}
+		.cart_hd .hd6{float: left;padding-left: 15px;width: 70px;}
+
+		.shop{margin-top:15px;}
+		.shop h4{height: 25px;border-bottom: 2px solid #ccc;font-weight: normal;color:#333;padding-left: 15px;font-size: 14px;line-height: 25px;}
+		.shop h4 .shop_check{position: relative;top: 2px; margin-right:5px;}
+		.cart_list{border: 1px solid #ddd;padding: 15px;height: 80px;}
+		.cart_list .p1{float: left;width: 30px;}
+		.cart_list .p2{float: left;width: 420px; height: 80px;}
+		.cart_list .p2 .goods_img{float: left;width: 80px;}
+		.cart_list .p2 .goods_txt{float: left;width: 250px;margin-left:15px;font-size: 12px; color: #666;line-height: 24px; }
+		.cart_list .p3{float: left;font-size: 12px; color: #000;width: 150px;line-height: 26px;}
+		.cart_list .p4{float: left;width: 115px;}
+		.cart_list .p4 button{width: 20px;height: 20px;border: 1px solid #ddd;background: none;cursor: pointer;}
+		.cart_list .p4 .goods_num{border: 1px solid #ddd;border-left:0;border-right:0;height: 19px;width: 35px; padding-left: 3px;}
+		.cart_list .p5{float: left;font-size: 12px; color: #000;width: 155px;line-height: 26px;}
+		.cart_list .p6{float: left;}
+		.cart_list .p6 a.del{color: #666; text-decoration: none;font-size: 12px;line-height: 26px;}
+		.cart_foot{height: 50px; border: 1px solid #ddd; margin-top:20px;line-height: 50px;}
+		.cart_foot .total_num{float: right;font-size: 14px; color: #666;padding: 0 20px;}
+		.cart_foot .total_price{float: right;font-size: 14px; color: #666;padding: 0 20px;}
+		.cart_foot button{float: right;width: 96px;height: 50px;background: #e54346;border: 0;text-align: center;font-size: 18px;color: #fff;}
+	</style>
+	<script src="vue.js"></script>
+</head>
+<body>
+	<div class="cart">
+		<div class="cart_hd">
+			<div class="hd1"><input type="checkbox" name="" class="all_check" @click="all" v-model="ischeck" /><label>全选</label></div>
+			<div class="hd2">商品</div>
+			<div class="hd3">单价</div>
+			<div class="hd4">数量</div>
+			<div class="hd5">小计</div>
+			<div class="hd6">操作</div>
+		</div>
+		<div class="cart_bd">
+			<div class="shop" v-for="(list,index1) in shop">
+				<h4><input type="checkbox" id="check" class="shop_check" v-model="list.ischeck" name="" @click="shop_name(list)">{{list.title}}</h4>
+				<div class="cart_list" v-for="(item,index) in list.product">
+					<div class="p1"><input type="checkbox" class="goods_check" v-model="item.ischeck" name="" @click="goods_name(item,list)"></div>
+					<div class="p2">
+						<div class="goods_img"><img :src="item.src" /></div>
+						<div class="goods_txt">{{item.content}}</div>
+					</div>
+					<div class="p3 price">{{item.price | price}}</div>
+					<div class="p4"><button class="reduce" @click="reduce(item)">-</button><input type="number" name="" class="goods_num" v-model="item.num"/><button class="add" @click="add(item)">+</button></div>
+					<div class="p5 sum_price">{{item.price*item.num | price}}</div>
+					<div class="p6"><a href="javascript:;" class="del" @click="del(index1,index)">删除</a></div>
+				</div>
+			</div>
+		</div>
+		<div class="cart_foot">
+			<button>去结算</button>
+			<div class="total_price">总价：<span>￥{{sum}}</span></div>
+			<div class="total_num">已选择<span>{{count}}</span>件商品</div>
+		</div>
+	</div>
+	<script>
+    var app=new Vue({
+			el:".cart",
+			data:{
+				ischeck:false,
+				num:0,
+				shop:[
+					{
+						title:"车工官方旗舰店",
+						ischeck:false,
+						product:[
+								{
+                  ischeck:false,
+									src:"http://placehold.it/80X80",
+									content:"嘉实多(Castrol)机油润滑油 极护磁护金嘉护银嘉护 磁护全合成 4L 5W-40 SN",
+									price:229,
+									num:0
+								},
+								{
+									ischeck:false,
+									src:"http://placehold.it/80X80",
+									content:"嘉实多(Castrol)机油润滑油 极护磁护金嘉护银嘉护 磁护全合成 4L 5W-40 SN",
+									price:229,
+									num:0
+								}
+							]
+					},
+				  {
+						title:"京东自营",
+						ischeck:false,
+						product:[
+								{
+									ischeck:false,
+									src:"http://placehold.it/80X80",
+									content:"嘉实多(Castrol)机油润滑油 极护磁护金嘉护银嘉护 磁护全合成 4L 5W-40 SN",
+									price:229,
+									num:0
+								},
+								{
+									ischeck:false,
+									src:"http://placehold.it/80X80",
+									content:"嘉实多(Castrol)机油润滑油 极护磁护金嘉护银嘉护 磁护全合成 4L 5W-40 SN",
+									price:229,
+									num:0
+								},
+								{
+									ischeck:false,
+									src:"http://placehold.it/80X80",
+									content:"嘉实多(Castrol)机油润滑油 极护磁护金嘉护银嘉护 磁护全合成 4L 5W-40 SN",
+									price:229,
+									num:0
+								},
+								{
+									ischeck:false,
+									src:"http://placehold.it/80X80",
+									content:"嘉实多(Castrol)机油润滑油 极护磁护金嘉护银嘉护 磁护全合成 4L 5W-40 SN",
+									price:229,
+									num:0
+								}
+							]
+					}
+				]
+			},
+			methods:{
+				all:function(){
+					if(this.ischeck){
+						for(let i=0;i<this.shop.length;i++){
+							if(this.shop[i].ischeck){
+								this.shop[i].ischeck=false
+							}
+							for(let j=0;j<this.shop[i].product.length;j++){
+								if(this.shop[i].product[j].ischeck){
+									this.shop[i].product[j].ischeck=false
+								}
+							}
+						}
+					}else{
+						for(let i=0;i<this.shop.length;i++){
+							if(!this.shop[i].ischeck){
+								this.shop[i].ischeck=true
+							}
+							for(let j=0;j<this.shop[i].product.length;j++){
+								if(!this.shop[i].product[j].ischeck){
+									this.shop[i].product[j].ischeck=true
+								}
+							}
+						 }
+					}
+				},
+				shop_name:function(item){
+					if(!item.ischeck){
+						for(let y in item.product){
+							item.product[y].ischeck = true;
+						}
+					}else{
+						for(let y in item.product){
+							item.product[y].ischeck = false;
+						}
+					}
+				},
+        goods_name:function(_item,item){
+        	if(!_item.ischeck){
+        		this.num++;
+        		if(this.num == item.product.length){
+        		  item.ischeck=true
+        		}else{
+        			item.ischeck=false
+        		}
+          }else{
+          	console.log(this.num)
+          	this.num--;
+            if(this.num == item.product.length){
+        		  item.ischeck=true
+        		}else{
+        			item.ischeck=false
+        		}
+          }
+        },
+				del:function(index1,index){
+					this.shop[index1].product.splice(index,1);
+				},
+        add:function(item){
+          item.num++;
+        },
+        reduce:function(item){
+          item.num--;
+          if(item.num<=0){
+          	item.num=0
+          }
+        }
+			},
+			computed:{
+				count:function(){
+					let count = 0;
+					for(let j=0;j<this.shop.length;j++){
+						for(let i=0;i<this.shop[j].product.length;i++){
+	             count += parseInt(this.shop[j].product[i].num);
+	          }
+					}
+            return count;
+				},
+				sum:function(){
+					let sum = 0;
+				 for(let j=0;j<this.shop.length;j++){
+					 for(let i=0;i<this.shop[j].product.length;i++){
+							sum += parseInt(this.shop[j].product[i].num)*parseInt(this.shop[j].product[i].price);
+					 }
+				 }
+						return sum;
+				}
+			},
+      filters:{
+				price:function(val){
+					return "￥"+val.toFixed(2);
+				}
+			}
+		})
+	</script>
+</body>
+</html>
