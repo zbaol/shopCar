@@ -35,6 +35,9 @@
 		.cart_foot .total_num{float: right;font-size: 14px; color: #666;padding: 0 20px;}
 		.cart_foot .total_price{float: right;font-size: 14px; color: #666;padding: 0 20px;}
 		.cart_foot button{float: right;width: 96px;height: 50px;background: #e54346;border: 0;text-align: center;font-size: 18px;color: #fff;}
+		input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button
+		{-webkit-appearance: none;};
 	</style>
 	<script src="vue.js"></script>
 </head>
@@ -50,9 +53,9 @@
 		</div>
 		<div class="cart_bd">
 			<div class="shop" v-for="(list,index1) in shop">
-				<h4><input type="checkbox" id="check" class="shop_check" v-model="list.ischeck" name="" @click="shop_name(list)">{{list.title}}</h4>
+				<h4><input type="checkbox" id="check" class="shop_check" v-model="list.ischeck" name="" @click="shop_name(list,index1)">{{list.title}}</h4>
 				<div class="cart_list" v-for="(item,index) in list.product">
-					<div class="p1"><input type="checkbox" class="goods_check" v-model="item.ischeck" name="" @click="goods_name(item,list)"></div>
+					<div class="p1"><input type="checkbox" class="goods_check" v-model="item.ischeck" name="" @click="goods_name(index1,index)"></div>
 					<div class="p2">
 						<div class="goods_img"><img :src="item.src" /></div>
 						<div class="goods_txt">{{item.content}}</div>
@@ -75,7 +78,6 @@
 			el:".cart",
 			data:{
 				ischeck:false,
-				num:0,
 				shop:[
 					{
 						title:"车工官方旗舰店",
@@ -138,55 +140,66 @@
 					if(this.ischeck){
 						for(let i=0;i<this.shop.length;i++){
 							if(this.shop[i].ischeck){
-								this.shop[i].ischeck=false
-							}
-							for(let j=0;j<this.shop[i].product.length;j++){
-								if(this.shop[i].product[j].ischeck){
-									this.shop[i].product[j].ischeck=false
+								this.shop[i].ischeck=false;
+								for(let j=0;j<this.shop[i].product.length;j++){
+									if(this.shop[i].product[j].ischeck){
+										this.shop[i].product[j].ischeck=false
+									}
 								}
+							}else{
+								this.shop[i].ischeck=true
 							}
 						}
 					}else{
 						for(let i=0;i<this.shop.length;i++){
 							if(!this.shop[i].ischeck){
-								this.shop[i].ischeck=true
-							}
-							for(let j=0;j<this.shop[i].product.length;j++){
-								if(!this.shop[i].product[j].ischeck){
-									this.shop[i].product[j].ischeck=true
+								this.shop[i].ischeck=true;
+								for(let j=0;j<this.shop[i].product.length;j++){
+									if(!this.shop[i].product[j].ischeck){
+										this.shop[i].product[j].ischeck=true
+									}
 								}
+							}else{
+								this.shop[i].ischeck=false
 							}
 						 }
 					}
 				},
-				shop_name:function(item){
+				shop_name:function(item,index){
+					var b=this.shop.filter(x => !x.ischeck).length;
+					console.log(b)
 					if(!item.ischeck){
 						for(let y in item.product){
 							item.product[y].ischeck = true;
+						}
+						if(b==this.shop.length-1){
+	             this.ischeck=true;
+						}else{
+							this.ischeck=false;
 						}
 					}else{
 						for(let y in item.product){
 							item.product[y].ischeck = false;
 						}
+						this.ischeck=false;
 					}
 				},
-        goods_name:function(_item,item){
-        	if(!_item.ischeck){
-        		this.num++;
-        		if(this.num == item.product.length){
-        		  item.ischeck=true
-        		}else{
-        			item.ischeck=false
-        		}
-          }else{
-          	console.log(this.num)
-          	this.num--;
-            if(this.num == item.product.length){
-        		  item.ischeck=true
-        		}else{
-        			item.ischeck=false
-        		}
-          }
+        goods_name:function(index1,index){
+					var a=this.shop[index1].product.filter(x => x.ischeck).length;
+					var b=this.shop.filter(x => x.ischeck).length;
+					console.log(a)
+					if(a==this.shop[index1].product.length-1&&!this.shop[index1].product[index].ischeck){
+             this.shop[index1].ischeck=true;
+						 if(b==this.shop.length-1){
+	              this.ischeck=true;
+	 					 }else{
+	 						this.ischeck=false;
+	 					 }
+					}else{
+						this.shop[index1].ischeck=false;
+						this.ischeck=false;
+					}
+
         },
 				del:function(index1,index){
 					this.shop[index1].product.splice(index,1);
